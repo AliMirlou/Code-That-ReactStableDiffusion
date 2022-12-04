@@ -19,6 +19,7 @@ app.add_middleware(
 
 device = "cuda"
 model_id = "openvoyage/voyage-v1"
+negative_prompt = ""
 
 scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
 
