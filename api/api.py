@@ -17,10 +17,11 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
-
 device = "cuda"
 model_id = "openvoyage/voyage-v1"
+
+scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
+
 #pipe = StableDiffusionPipeline.from_pretrained(model_id, revision="fp16", torch_dtype=torch.float16, use_auth_token=auth_token)
 pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16)
 pipe = pipe.to(device)
