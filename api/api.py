@@ -3,7 +3,7 @@ from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 import torch
 from torch import autocast
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, DiffusionPipeline, DPMSolverMultistepScheduler
 from io import BytesIO
 import base64 
 
@@ -17,15 +17,19 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
+
 device = "cuda"
-model_id = "CompVis/stable-diffusion-v1-4"
-pipe = StableDiffusionPipeline.from_pretrained(model_id, revision="fp16", torch_dtype=torch.float16, use_auth_token=auth_token)
-pipe.to(device)
+model_id = "openvoyage/voyage-v1"
+#pipe = StableDiffusionPipeline.from_pretrained(model_id, revision="fp16", torch_dtype=torch.float16, use_auth_token=auth_token)
+pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16)
+pipe = pipe.to(device)
 
 @app.get("/")
-def generate(prompt: str): 
-    with autocast(device): 
-        image = pipe(prompt, guidance_scale=8.5).images[0]
+def generate(prompt: str):
+    with autocast(device):
+        # image = pipe(prompt, guidance_scale=8.5).images[0]
+        image = pipe(prompt=prompt, negative_prompt=negative_prompt, num_inference_steps=25, width=512, height=512, guidance_scale=10).images[0]
 
     image.save("testimage.png")
     buffer = BytesIO()
