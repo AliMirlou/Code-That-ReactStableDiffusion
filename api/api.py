@@ -31,7 +31,7 @@ pipe = pipe.to(device)
 def generate(prompt: str):
     with autocast(device):
         # image = pipe(prompt, guidance_scale=8.5).images[0]
-        image = pipe(prompt=prompt, negative_prompt=negative_prompt, num_inference_steps=25, width=512, height=512, guidance_scale=10).images[0]
+        image = pipe(prompt=f'<voyage> style {prompt}', negative_prompt=negative_prompt, num_inference_steps=25, width=512, height=512, guidance_scale=10).images[0]
 
     image.save("testimage.png")
     buffer = BytesIO()
